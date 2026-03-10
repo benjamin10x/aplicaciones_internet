@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FlaskUI</title>
+</head>
+<style>
+  body{
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: black;
+  }
+  .container{
+    margin: auto;
+    width: 40%;
+    background-color: aliceblue;
+  }
+</style>
+<body>
+<div class="container">
+  <h1>Usuarios (Flask UI)</h1>
+
+  <div>
+    <h2>Agregar usuario</h2>
+    <form method="post" action="/agregar">
+      <div>
+        <div>
+          <label>ID</label>
+          <input name="id" placeholder="Ej. 4" required />
+        </div>
+        <div>
+          <label>Nombre</label>
+          <input name="nombre" required />
+        </div>
+        <div>
+          <label>Email</label>
+          <input name="email" required />
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <button class="btn" type="submit">Agregar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Lista de usuarios</h2>
+    <p class="muted">Total: {{ total }}</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th style="width:140px;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in usuarios %}
+          <tr>
+            <td>{{ u.id }}</td>
+            <td>{{ u.nombre }}</td>
+            <td>{{ u.email }}</td>
+            <td>
+              <form method="post" action="/eliminar/{{u.id}}"
+                    onsubmit="return confirm('¿Eliminar usuario?');">
+                <button class="danger" type="submit">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+
+        {% if usuarios|length == 0 %}
+          <tr>
+            <td colspan="4" class="muted">No hay usuarios o no se pudo conectar.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>
