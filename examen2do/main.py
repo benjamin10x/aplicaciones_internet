@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import secrets
 
+print(datetime.now().date().day)
 
 app = FastAPI()
 # sencilla, suite, doble
@@ -18,7 +19,7 @@ class Reserva(BaseModel):
     fecha_salida: datetime = Field(..., description="Fecha de salida ")
     tipo_habitacion: str
     confirmado: bool = False
-    estancia: int = Field(..., description="Duración de la estancia en días", ge=0, le=7)
+    estancia: int = Field(..., description="Duración de la estancia no mayor a 7 dias", ge=0, le=7)
 
     @field_validator('tipo_habitacion')
     @classmethod
@@ -46,23 +47,34 @@ def verificar_usuario(credentials: HTTPBasicCredentials = Depends(seguridad)):
 
 
 
-
-
-
-# Crear reserva
+# crear reserva
 @app.post("/reservas", status_code=status.HTTP_201_CREATED)
 def crear_reserva(reserva: Reserva):
-    if reserva.fecha_entrada.date().day < datetime.now().date().day:
-        raise HTTPException(status_code=400, detail="La fecha de entrada no puede ser menor a la fecha actual.")
-    if reserva.fecha_salida < reserva.fecha_entrada:
-        raise HTTPException(status_code=400, detail="La fecha de salida no puede ser menor a la fecha de entrada.")
+
+    if reserva.fecha_entrada.date() < datetime.now().date():
+        raise HTTPException(
+            status_code=400,
+            detail="La fecha de entrada no puede ser menor a la fecha actual."
+        )
+
+    if reserva.fecha_salida <= reserva.fecha_entrada:
+        raise HTTPException(
+            status_code=400,
+            detail="La fecha de salida debe ser mayor a la fecha de entrada."
+        )
+
     estancia = (reserva.fecha_salida - reserva.fecha_entrada).days
+
     if estancia > 7:
-        raise HTTPException(status_code=400, detail="La estancia no puede ser mayor a 7 días.")
+        raise HTTPException(
+            status_code=400,
+            detail="La estancia no puede ser mayor a 7 días."
+        )
+
     reserva.estancia = estancia
     reservas.append(reserva)
-    return reserva
 
+    return reserva
 
 
 
