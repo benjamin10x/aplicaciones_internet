@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  practica_8:
+    build: .
+    container_name: practica_8
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./app:/app/app
+    restart: unless-stopped
